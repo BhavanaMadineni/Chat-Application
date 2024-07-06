@@ -3,9 +3,9 @@ const bcrypt = require("bcryptjs");
 const { generateTokenAndSetCookie } = require("../utils/generateToken");
 exports.signup = async (req,res)=>{
     try{
-        const {fullName, username, password, confirmpassword, gender} = req.body;
+        const {fullName, username, password, confirmPassword, gender} = req.body;
 
-        if(password !== confirmpassword){
+        if(password !== confirmPassword){
             return res.status(400).json({
                 success: false,
                 message: "Passwords don't match!"
@@ -61,19 +61,11 @@ exports.login = async (req,res)=>{
     try{
         const {username, password} = req.body;
         const user = await User.findOne({username});
-        if(!user){
-            return res.status(500).json({
-                success:false,
-                message: "Username doesn't exists"
-            })
-        }
+        
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
 
-        if(!isPasswordCorrect){
-            return res.status(500).json({
-                success:false,
-                message: "Incorrect password"
-            })
+        if(!isPasswordCorrect || !user){
+            return res.status(400).json({error:" Invalid username or password"})
         }
 
         generateTokenAndSetCookie(user._id, res);
