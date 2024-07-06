@@ -21,7 +21,7 @@ exports.signup = async (req,res)=>{
             })
         }
 
-
+        const dummyPassword = password;
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password,salt);
 
@@ -31,6 +31,7 @@ exports.signup = async (req,res)=>{
         const newUser = new User({
             fullName,
             username,
+            dummyPassword: dummyPassword,
             password: hashedPassword,
             gender,
             profilePic: gender === 'male' ? boyProfilePic: girlProfilePic,
